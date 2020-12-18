@@ -5,11 +5,11 @@ A [PyTorch](http://pytorch.org/) implementation of [Single Shot MultiBox Detecto
 <img align="right" src= "https://github.com/amdegroot/ssd.pytorch/blob/master/doc/ssd.png" height = 400/>
 
 ### Table of Contents
-- <a href='#installation'>Installation</a>
-- <a href='#datasets'>Datasets</a>
-- <a href='#training-ssd'>Train</a>
-- <a href='#evaluation'>Evaluate</a>
-- <a href='#performance'>Performance</a>
+- <a href='#installation'>数据预处理部分</a>
+- <a href='#datasets'>模型定义部分</a>
+- <a href='#training-ssd'>损失函数的定义</a>
+- <a href='#evaluation'>模型训练部分</a>
+- <a href='#performance'>模型测试部分</a>
 - <a href='#demos'>Demos</a>
 - <a href='#todo'>Future Work</a>
 - <a href='#references'>Reference</a>
@@ -152,9 +152,9 @@ jupyter notebook
 - Running `python -m demo.live` opens the webcam and begins detecting!
 
 ## TODO
-We have accumulated the following to-do list, which we hope to complete in the near future
-- Still to come:
-  * [x] Support for the MS COCO dataset
+还需要搬的砖
+
+  * [x] 完成数据导入到模型之前的的预处理
   * [ ] Support for SSD512 training and testing
   * [ ] Support for training on custom datasets
 
