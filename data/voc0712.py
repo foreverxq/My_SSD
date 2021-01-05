@@ -8,8 +8,9 @@ Updated by: Ellis Brown, Max deGroot
 
 
 """
-from .config import HOME
+# from config import HOME
 import os.path as osp
+import os
 import sys
 import torch
 import torch.utils.data as data
@@ -23,14 +24,11 @@ else:
 
 
 VOC_CLASSES = (  # always index 0
-    'aeroplane', 'bicycle', 'bird', 'boat',
-    'bottle', 'bus', 'car', 'cat', 'chair',
-    'cow', 'diningtable', 'dog', 'horse',
-    'motorbike', 'person', 'pottedplant',
-    'sheep', 'sofa', 'train', 'tvmonitor')
+'8FSK','2FSK','AM','CW','8PSK'
+)
 
 # note: if you used our download scripts, this should be right
-VOC_ROOT = osp.join(HOME, "data/VOCdevkit/")
+dataroot = r'D:\My_SSD\data\shipingtu\2'
 
 
 class VOCAnnotationTransform(object):
@@ -74,7 +72,7 @@ class VOCAnnotationTransform(object):
                 # scale height or width
                 cur_pt = cur_pt / width if i % 2 == 0 else cur_pt / height
                 bndbox.append(cur_pt)
-            label_idx = self.class_to_ind[name]
+            label_idx = self.class_to_ind[name.upper()]
             bndbox.append(label_idx)
             res += [bndbox]  # [xmin, ymin, xmax, ymax, label_ind]
             # img_id = target.find('filename').text[:-4]
@@ -100,21 +98,15 @@ class VOCDetection(data.Dataset):
     """
 
     def __init__(self, root,
-                 image_sets=[('2007', 'trainval')],
-                 transform=None, target_transform=VOCAnnotationTransform(),
-                 dataset_name='VOC0712'):
+                 transform=None, target_transform=VOCAnnotationTransform()):
         self.root = root
-        self.image_set = image_sets
         self.transform = transform
         self.target_transform = target_transform
-        self.name = dataset_name
-        self._annopath = osp.join('%s', 'Annotations', '%s.xml')
-        self._imgpath = osp.join('%s', 'JPEGImages', '%s.jpg')
-        self.ids = list()
-        for (year, name) in image_sets:
-            rootpath = osp.join(self.root, 'VOC' + year)
-            for line in open(osp.join(rootpath, 'ImageSets', 'Main', name + '.txt')):
-                self.ids.append((rootpath, line.strip()))
+        self._annopath = osp.join(self.root,'xml', '%s.xml')
+        self._imgpath = osp.join(self.root, '%s.bmp')
+        self.ids = [i.split('.')[0] for i in os.listdir(osp.join(self.root, 'imag'))]
+
+
 
     def __getitem__(self, index):
         im, gt, h, w = self.pull_item(index)
@@ -129,7 +121,7 @@ class VOCDetection(data.Dataset):
 
         target = ET.parse(self._annopath % img_id).getroot()
         #img = cv2.imread(self._imgpath % img_id)
-        img = cv2.imdecode(np.fromfile(self._imgpath  % img_id, dtype = np.uint8), -1)
+        img = cv2.imread(osp.join(self.root, 'imag', img_id+'.bmp'),3)
         height, width, channels = img.shape
 
         if self.target_transform is not None:
@@ -157,7 +149,8 @@ class VOCDetection(data.Dataset):
             PIL img
         '''
         img_id = self.ids[index]
-        cv_img = cv2.imdecode(np.fromfile('C:/Users/华为/Desktop/ssd.pytorch-master/data/VOCdevkit/VOC2007/JPEGImages/w.jpg', dtype = np.uint8), -1)
+        # cv_img = cv2.imdecode(np.fromfile('C:/Users/华为/Desktop/ssd.pytorch-master/data/VOCdevkit/VOC2007/JPEGImages/w.jpg', dtype = np.uint8), -1)
+        cv_img = cv2.imread(osp.join(self.root, 'imag', img_id+'.bmp'),3)
         return cv_img
 
     def pull_anno(self, index):
@@ -175,7 +168,7 @@ class VOCDetection(data.Dataset):
         img_id = self.ids[index]
         anno = ET.parse(self._annopath % img_id).getroot()
         gt = self.target_transform(anno, 1, 1)
-        return img_id[1], gt
+        return img_id, gt
 
     def pull_tensor(self, index):
         '''Returns the original image at an index in tensor form
@@ -191,11 +184,14 @@ class VOCDetection(data.Dataset):
         return torch.Tensor(self.pull_image(index)).unsqueeze_(0)
 
 if __name__ == '__main__':
-    testset = VOCDetection(VOC_ROOT, [('2007', 'val')], None, VOCAnnotationTransform())
+    testset = VOCDetection(dataroot, None, VOCAnnotationTransform())
     img_id = 10
     image = testset.pull_image(img_id)
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    anno = testset.pull_anno(img_id)
+    tensor = testset.pull_tensor(img_id)
     # View the sampled input image before transform
+    item = testset.pull_item(img_id)
     plt.figure(figsize=(10, 10))
     plt.imshow(rgb_image)
     plt.show()
