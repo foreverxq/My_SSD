@@ -94,7 +94,7 @@ class MultiBoxLoss(nn.Module):
                                                                                     # conf_t shape(batch_size, num_priors)
                                                                                     #通过gather函数选取出模型对各个prior预测的值
                                                                                     #其shape为(batch_size * num_priors, 1)
-
+        loss_c = loss_c.view(pos.size()[0], pos.size()[1])
         # Hard Negative Mining
         loss_c[pos] = 0  # filter out pos boxes for now                             loss_c shape: (batch_size, num_priors) #pos shape
         loss_c = loss_c.view(num, -1)#loss_c shape(batch_size, num_priors)
