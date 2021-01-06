@@ -8,6 +8,8 @@ Updated by: Ellis Brown, Max deGroot
 
 
 """
+from utils.augmentations import SSDAugmentation
+from data import *
 # from config import HOME
 import os.path as osp
 import os
@@ -28,7 +30,7 @@ VOC_CLASSES = (  # always index 0
 )
 
 # note: if you used our download scripts, this should be right
-dataroot = r'D:\My_SSD\data\shipingtu\2'
+VOC_ROOT = r'D:\My_SSD\data\shipingtu\2'
 
 
 class VOCAnnotationTransform(object):
@@ -99,6 +101,7 @@ class VOCDetection(data.Dataset):
 
     def __init__(self, root,
                  transform=None, target_transform=VOCAnnotationTransform()):
+        self.name = "xhjc_sjj"
         self.root = root
         self.transform = transform
         self.target_transform = target_transform
@@ -184,14 +187,37 @@ class VOCDetection(data.Dataset):
         return torch.Tensor(self.pull_image(index)).unsqueeze_(0)
 
 if __name__ == '__main__':
-    testset = VOCDetection(dataroot, None, VOCAnnotationTransform())
+    MEANS = (104, 117, 123)
+    min_dim = 300
+    # testset = VOCDetection(VOC_ROOT, None, VOCAnnotationTransform())
+    dataset = VOCDetection(root=VOC_ROOT,
+                           transform=SSDAugmentation(min_dim,
+                                                     MEANS))
+
+    data_loader = data.DataLoader(dataset, 2,
+                                  num_workers=2,
+                                  shuffle=True, collate_fn=detection_collate,
+                                  pin_memory=True)
+    # create batch iterator
+    batch_iterator = iter(data_loader)
+    for i in range(100):
+
+        try:
+            # Samples the batch
+            x, y = next(batch_iterator)
+        except StopIteration:
+            # restart the generator if the previous generator is exhausted.
+            batch_iterator = iter(data_loader)
+            x, y = next(batch_iterator)
+
+
     img_id = 10
-    image = testset.pull_image(img_id)
+    image = dataset.pull_image(img_id)
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    anno = testset.pull_anno(img_id)
-    tensor = testset.pull_tensor(img_id)
+    anno = dataset.pull_anno(img_id)
+    tensor = dataset.pull_tensor(img_id)
     # View the sampled input image before transform
-    item = testset.pull_item(img_id)
+    item = dataset.pull_item(img_id)
     plt.figure(figsize=(10, 10))
     plt.imshow(rgb_image)
     plt.show()
