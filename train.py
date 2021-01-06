@@ -26,21 +26,21 @@ parser = argparse.ArgumentParser(
 train_set = parser.add_mutually_exclusive_group()
 parser.add_argument('--dataset', default='VOC', choices=['VOC', 'COCO'],
                     type=str, help='VOC or COCO')
-parser.add_argument('--dataset_root', default=VOC_ROOT,
+parser.add_argument('--dataset_root', default=r'D:\My_SSD\data\shipingtu\2',
                     help='Dataset root directory path')
 parser.add_argument('--basenet', default='vgg16_reducedfc.pth',
                     help='Pretrained base model')
-parser.add_argument('--batch_size', default=32, type=int,
+parser.add_argument('--batch_size', default=2, type=int,
                     help='Batch size for training')
 parser.add_argument('--resume', default=None, type=str,
                     help='Checkpoint state_dict file to resume training from')
 parser.add_argument('--start_iter', default=0, type=int,
                     help='Resume training at this iter')
-parser.add_argument('--num_workers', default=4, type=int,
+parser.add_argument('--num_workers', default=2, type=int,
                     help='Number of workers used in dataloading')
 parser.add_argument('--cuda', default=False, type=str2bool,
                     help='Use CUDA to train model')
-parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float,
+parser.add_argument('--lr', '--learning-rate', default=1e-5, type=float,
                     help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float,
                     help='Momentum value for optim')
@@ -189,12 +189,12 @@ def train():
         loss.backward()
         optimizer.step()
         t1 = time.time()
-        loc_loss += loss_l.data[0]
-        conf_loss += loss_c.data[0]
+        loc_loss += loss_l.item()
+        conf_loss += loss_c.item()
 
         if iteration % 10 == 0:
             print('timer: %.4f sec.' % (t1 - t0))
-            print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.data[0]), end=' ')
+            print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.item()), end=' ')
 
         # if args.visdom:
         #     update_vis_plot(iteration, loss_l.data[0], loss_c.data[0],
@@ -261,24 +261,6 @@ def weights_init(m):
 
 
 if __name__ == '__main__':
-    #train()
-    cfg = voc
-    dataset = VOCDetection(root=args.dataset_root,
-                           transform=SSDAugmentation(cfg['min_dim'],
-                                                     MEANS))
-    data_loader = data.DataLoader(dataset, args.batch_size,
-                                  num_workers=args.num_workers,
-                                  shuffle=True, collate_fn=detection_collate,
-                                  pin_memory=True)
-    # create batch iterator
-    batch_iterator = iter(data_loader)
-    test_images, test_targets = next(batch_iterator)
-    # for x in test_targets:
-    #     print(x)
-    print(np.ones(shape=(1, 5)))
-    tensor = torch.Tensor(np.ones(shape = (1, 5)))
-    ssd_net = build_ssd('train', cfg['min_dim'], cfg['num_classes'])
-    net = ssd_net
-    out = net(test_images)
-    print(net(test_images))
+    train()
+
 
