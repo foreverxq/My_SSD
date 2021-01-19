@@ -1,8 +1,7 @@
-# SSD: Single Shot MultiBox Object Detector, in PyTorch
-A [PyTorch](http://pytorch.org/) implementation of [Single Shot MultiBox Detector](http://arxiv.org/abs/1512.02325) from the 2016 paper by Wei Liu, Dragomir Anguelov, Dumitru Erhan, Christian Szegedy, Scott Reed, Cheng-Yang, and Alexander C. Berg.  The official and original Caffe code can be found [here](https://github.com/weiliu89/caffe/tree/ssd).
+# SSD for modulation recognization
 
+这个是根据[ssd](https://github.com/amdegroot/ssd.pytorch) 库改写的一个项目代码，用作调制样式的识别。 
 
-<img align="right" src= "https://github.com/amdegroot/ssd.pytorch/blob/master/doc/ssd.png" height = 400/>
 
 ### Table of Contents
 - <a href='#installation'>数据预处理部分</a>
@@ -10,18 +9,17 @@ A [PyTorch](http://pytorch.org/) implementation of [Single Shot MultiBox Detecto
 - <a href='#training-ssd'>损失函数的定义</a>
 - <a href='#evaluation'>模型训练部分</a>
 - <a href='#performance'>模型测试部分</a>
-- <a href='#demos'>Demos</a>
-- <a href='#todo'>Future Work</a>
-- <a href='#references'>Reference</a>
+
+
 
 &nbsp;
 &nbsp;
 &nbsp;
 &nbsp;
 
-## Installation
-- Install [PyTorch](http://pytorch.org/) by selecting your environment on the website and running the appropriate command.
-- Clone this repository.
+## 数据预处理部分
+- 标记数据
+- 
   * Note: We currently only support Python 3+.
 - Then download the dataset by following the [instructions](#datasets) below.
 - We now support [Visdom](https://github.com/facebookresearch/visdom) for real-time loss visualization during training!
@@ -155,8 +153,8 @@ jupyter notebook
 还需要搬的砖
 
   * [x] 完成数据导入到模型之前的的预处理
-  * [ ] Support for SSD512 training and testing
-  * [ ] Support for training on custom datasets
+  * [x] 完成项目的整体训练流程
+  * [ ] 项目整体精度的提高
 
 ## Authors
 

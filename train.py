@@ -162,6 +162,7 @@ def train():
         #                     'append', epoch_size)
             # reset epoch loss counters
         if iteration != 0 and (iteration % epoch_size == 0):
+            batch_iterator = iter(data_loader)
             loc_loss = 0
             conf_loss = 0
             epoch += 1
@@ -202,7 +203,7 @@ def train():
 
         if iteration != 0 and iteration % 5000 == 0:
             print('Saving state, iter:', iteration)
-            torch.save(ssd_net.state_dict(), 'weights/ssd300_COCO_' +
+            torch.save(ssd_net.state_dict(), 'weights/ssd300_xhjc_' +
                        repr(iteration) + '.pth')
         torch.save(ssd_net.state_dict(),
                     args.save_folder + '' + args.dataset + '.pth')
